@@ -15,36 +15,3 @@ int main(int ac, char **av)
 	command_vm.start();
 	return (0);
 }
-
-
-
-// class Virt
-// {
-// public:
-// 	Virt() {}
-// 	~Virt() {}
-	
-// 	virtual int zorro(std::string str) const = 0;
-// };
-
-// class Child : Virt
-// {
-// public:
-// 	Child() {}
-// 	~Child() {}
-
-// 	zorro(std::string str) const override;
-// };
-
-// int Child::zorro(std::string str) const
-// {
-// 	std::cout << str << std::endl;
-// 	return (1);
-// }
-
-// Virt * tst(void)
-// {
-// 	Child *test = new Child();
-
-// 	return((Virt *)test);
-// }

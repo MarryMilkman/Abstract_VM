@@ -101,10 +101,11 @@ IOperand const * Int8::operator%( IOperand const & rhs ) const
 	std::string		str_value;
 	eOperandType	type = this->_type > rhs.getType() ?
 						this->_type : rhs.getType();
-	int			rhs_value = std::stod(rhs.toString());
+	double			rhs_value = std::stod(rhs.toString());
+	double			result;
 
-	str_value = std::to_string(static_cast<int>(this->_value)
-				 % rhs_value);
+	result = std::fmod(static_cast<double>(this->_value), rhs_value);
+	str_value = std::to_string(result);
 	r_operand = creator.createOperand(type, str_value);
 	return (r_operand);
 }

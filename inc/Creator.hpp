@@ -9,6 +9,20 @@ public:
 	Creator(){}
 	~Creator(){}
 
+	class	CreatorException : public std::exception
+	{
+	public:
+		CreatorException() throw();
+		CreatorException(CreatorException const & ref) throw();
+		CreatorException(eOperandType type) throw();
+		~CreatorException() throw();
+
+		virtual const char	*what() const throw();
+
+		Creator::CreatorException	& operator=(Creator::CreatorException const & ref) throw();
+		eOperandType		type;
+	};
+
 	IOperand const	*createOperand(eOperandType type, std::string const & value) const;
 private:
 	IOperand const	*_createInt8(std::string const & value) const;

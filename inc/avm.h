@@ -8,6 +8,15 @@
 # include <sstream>
 # include <algorithm>
 # include <stdlib.h> 
+# include <cmath>
+
+// Error messeges
+
+# define DIV_BY_ZERO -1
+# define MOD_BY_ZERO -2
+# define OPEN_ERROR -3
+# define PARS_ERROR_ARG -4
+# define PARS_ERROR_COMM -5
 
 // command
 # define PUSH 0
@@ -32,7 +41,7 @@
 
 typedef int eOperandType;
 
-typedef struct 			s_commad
+typedef struct 			s_command
 {
 	int					comm;
 	eOperandType		type;

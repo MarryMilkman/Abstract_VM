@@ -19,9 +19,21 @@ void	ParserVM::fread(char *path_file)
 	std::string		line;
 	std::string		t_line;
 
-	fd.open(path_file, std::fstream::in);
-	if (fd.is_open())
-		while (std::getline(fd, line))
+	try
+	{
+		fd.open(path_file, std::fstream::in);
+		if (!fd.is_open())
+			throw ParserVM::ParseException(0, path_file, OPEN_ERROR);
+	}
+	catch (std::exception & e)
+	{
+		std::cerr << e.what() << std::endl;
+		fd.close();
+		exit(0);
+	}
+	while (std::getline(fd, line))
+	{
+		try
 		{
 			this->_nbr_line++;
 			t_line = this->_check_line(line);
@@ -35,14 +47,12 @@ void	ParserVM::fread(char *path_file)
 				line.clear();
 				break ;
 			}
-			line.clear();
 		}
-	else
-	{
-		std::cout << "Error open file: " << path_file
-			<< std::endl;
-		fd.close();
-		exit(0);
+		catch (std::exception & e)
+		{
+			std::cerr << e.what() << std::endl;
+		}
+		line.clear();
 	}
 	this->_hendl_error();
 }
@@ -96,11 +106,8 @@ int		ParserVM::_hendl_line(std::string const line)
 		return (1);
 	if (arr_comm[i] == "")
 	{
-		std::cout << "Pars Error: line "
-			<< this->_nbr_line << ": illigal command"
-			<< command << std::endl;
 		this->_error++;
-		return (0);
+		throw ParserVM::ParseException(this->_nbr_line, 0, PARS_ERROR_COMM);
 	}
 	command = "";
 	if (!iss.eof())
@@ -130,24 +137,68 @@ void	ParserVM::_add_command(int comm, std::string str)
 		n_comm.value = vect[0];
 		if (!n_comm.type || !this->_isdigit(vect[0], n_comm.type))
 		{
-			std::cout << "Pars Error: line "
-					<< this->_nbr_line << ": illigaql argument\n";
 			this->_error++;
-			return ;
+			throw ParserVM::ParseException(this->_nbr_line, 0, PARS_ERROR_ARG);
 		}
 	}
 	else if ((comm == PUSH || comm == ASSERT))
 	{
-		std::cout << "Pars Error: line "
-				<< this->_nbr_line << ": illigaql argument\n";
 		this->_error++;
-		return ;
+		throw ParserVM::ParseException(this->_nbr_line, 0, PARS_ERROR_COMM);
 	}
 	this->_command_vm->command.push_back(n_comm);
 }
 
-// Helpful obj -----------------------
+// Exception
 
+ParserVM::ParseException::ParseException() throw()
+{
+}
+
+ParserVM::ParseException::ParseException(int line, char *file, int type_error) throw() : line(line), file(file), type_error(type_error)
+{
+}
+
+ParserVM::ParseException::ParseException(ParserVM::ParseException const & ref) throw()
+{
+	*this = ref;
+}
+
+ParserVM::ParseException::~ParseException() throw()
+{
+}
+
+const char	*ParserVM::ParseException::what() const throw()
+{
+	std::string		str;
+
+	if (this->type_error == OPEN_ERROR)
+	{
+		str = file;
+		str = "Error: no such file: " + str;
+		return (str.c_str());
+	}
+	if (this->type_error == PARS_ERROR_ARG)
+	{
+		str = "Line " + std::to_string(this->line) + ": Pars Error: illigal argument";
+	}
+	if (this->type_error == PARS_ERROR_COMM)
+	{
+		str = "Line " + std::to_string(this->line) + ": Pars Error: illigal command";
+	}
+	return (str.c_str());
+}
+
+ParserVM::ParseException	& ParserVM::ParseException::operator=(ParserVM::ParseException const & ref) throw()
+{
+	this->type_error = ref.type_error;
+	this->file = ref.file;
+	this->line = ref.line;
+	return (*this);	
+}
+
+
+// Helpful obj -----------------------
 
 
 std::vector<std::string>	ParserVM::_split(const std::string& s,
@@ -186,17 +237,16 @@ int							ParserVM::_isdigit(std::string str, int type)
 	count_dot = 0;
 	while (str[++i])
 	{
-		if (i > 9)
+		if (str[i] == '-' && i != 0)
 			return (0);
-		if ((str[i] < '0' || str[i] > '9') && str[i] != '.')
+		// if (i > 18)
+		// 	return (0);
+		if ((str[i] < '0' || str[i] > '9') && str[i] != '.' && str[i] != '-')
 			return (0);
 		if ((str[i] == '.'
-			&& type != FLOAT && type != DOUBLE)
-			|| (str[i] == '.' && (count_dot++ || !i)))
-		{
-			std::cout << str[i] << "---a cacogo baras::\n";
+				&& type != FLOAT && type != DOUBLE)
+				|| (str[i] == '.' && (count_dot++ || !i)))
 			return (0);
-		}
 	}
 	return (1);
 }

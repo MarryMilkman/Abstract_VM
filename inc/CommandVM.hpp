@@ -19,16 +19,36 @@ class CommandVM
 {
 public:
 	CommandVM();
+	CommandVM(CommandVM const & ref);
 	~CommandVM();
 
-	void	start();
+	void					start();
 	std::vector<t_command>	command;
+
+	t_stack					*get_stack() const;
+
+	CommandVM				& operator=(CommandVM const & ref);
+
+	class	CommandException : public std::exception
+	{
+	public:
+		CommandException() throw();
+		CommandException(CommandException const & ref) throw();
+		CommandException(int comm) throw();
+		~CommandException() throw();
+
+		virtual const char			*what() const throw();
+
+		int							comm;
+	
+		CommandVM::CommandException	& operator=(CommandVM::CommandException const & ref) throw ();
+	};
+
 private:
 	t_stack	*_stack;
 	void	_add_to_stack(IOperand const *operand);
 	void	_remove_from_stack();
 	void	_free_stack();
-
 
 	void	_push(t_command & command);
 	void	_pop(t_command & command);
@@ -41,9 +61,6 @@ private:
 	void	_mod(t_command & command);
 	void	_print(t_command & command);
 	void	_exit(t_command & command);
-
-	typedef	void(CommandVM::*ComFunc)(t_command &);
-	static	ComFunc arr_func[12];
 };
 
 #endif

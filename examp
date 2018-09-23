@@ -1,0 +1,13 @@
+push Float(-0.123)
+push Int8(123)
+print
+mul
+dump
+push Float(0.2)
+push Float(131123123123)
+mod
+dump
+;;
+asdasdasdas
+div
+dump

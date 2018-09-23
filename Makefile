@@ -7,7 +7,7 @@ SRC_DIR	:= ./src/
 INC_DIR := ./inc/
 
 # Source and object files
-SRC		:= main.cpp ParserVM.cpp Command.cpp Creator.cpp \
+SRC		:= main.cpp ParserVM.cpp CommandVM.cpp Creator.cpp \
 		Int8.cpp Int16.cpp Int32.cpp Float.cpp Double.cpp
 OBJ		:= $(addprefix $(OBJ_DIR), $(SRC:.cpp=.o))
 
@@ -16,7 +16,7 @@ INC	:= avm.h
 
 # Compiler and flags
 CC		:= g++
-FLAGS	:= #-Wall -Wextra -Werror
+FLAGS	:= -Wall -Wextra -Werror -std=c++11
 
 # Compile and link the program
 all: obj_dir $(NAME)

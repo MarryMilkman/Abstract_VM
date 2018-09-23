@@ -13,6 +13,23 @@ public:
 	void	fread(char *path_file);
 	void	iread();
 
+	class ParseException : public std::exception
+	{
+	public:
+		ParseException() throw();
+		ParseException(int line, char *file, int type_error) throw();
+		ParseException(ParseException const & ref) throw();
+		~ParseException() throw();
+
+		virtual const char	*what() const throw();
+
+		int		line;
+		char	*file;
+		int		type_error;
+
+		ParserVM::ParseException	& operator=(ParserVM::ParseException const & ref) throw();
+	};
+
 
 private:
 	int 		_hendl_line(std::string line);
