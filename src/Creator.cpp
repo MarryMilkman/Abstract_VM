@@ -38,7 +38,7 @@ IOperand const	*Creator::_createInt8(std::string const & value) const
 	}
 	catch (std::exception & e)
 	{
-		std::cerr << "Error: overflow Int32\n";
+		std::cerr << "Error: overflow Int8\n";
 		exit(0);
 	}
 	if (num > 127 || num < -128)
@@ -58,7 +58,7 @@ IOperand const	*Creator::_createInt16(std::string const & value) const
 	}
 	catch (std::exception & e)
 	{
-		std::cerr << "Error: overflow Int32\n";
+		std::cerr << "Error: overflow Int16\n";
 		exit(0);
 	}
 	if (num > 32767 || num < -32768)
@@ -91,7 +91,15 @@ IOperand const	*Creator::_createFloat(std::string const & value) const
 {
 	Float	*operand;
 
-	operand = new Float((std::stof(value)));
+	try 
+	{
+		operand = new Float((std::stof(value)));
+	}
+	catch (std::exception & e)
+	{
+		std::cerr << "Error: overflow Float\n";
+		exit(0);
+	}
 	return (reinterpret_cast<IOperand *>(operand));
 }
 
@@ -99,7 +107,15 @@ IOperand const	*Creator::_createDouble(std::string const & value) const
 {
 	Double	*operand;
 
-	operand = new Double((std::stod(value)));
+	try
+	{
+		operand = new Double((std::stod(value)));
+	}
+	catch (std::exception & e)
+	{
+		std::cerr << "Error: overflow Double\n";
+		exit(0);
+	}
 	return (reinterpret_cast<IOperand *>(operand));
 }
 

@@ -39,9 +39,11 @@ private:
 	CommandVM	*_command_vm;
 	int			_nbr_line;
 	int			_error;
+	bool		_isInput;
+	int			_countExit;
 
-	std::vector<std::string>	_split(const std::string& s,
-			char delim);
+	int							_count_c(std::string const &str, char c);
+	std::vector<std::string>	_split(const std::string& s, char delim);
 	std::string					_check_line(std::string line);
 	int							_isdigit(std::string str, int type);
 };

@@ -45,8 +45,17 @@ IOperand const * Double::operator+( IOperand const & rhs ) const
 	std::string		str_value;
 	eOperandType	type = this->_type > rhs.getType() ?
 						this->_type : rhs.getType();
-	double			rhs_value = std::stod(rhs.toString());
+	double			rhs_value;
 
+	try
+	{
+		rhs_value = std::stod(rhs.toString());
+	}
+	catch (std::exception & e)
+	{
+		std::cerr << "Error: overflow Double";
+		exit(0);
+	}
 	str_value = std::to_string(this->_value + rhs_value);
 	r_operand = creator.createOperand(type, str_value);
 	return (r_operand);
@@ -59,9 +68,18 @@ IOperand const * Double::operator-( IOperand const & rhs ) const
 	std::string		str_value;
 	eOperandType	type = this->_type > rhs.getType() ?
 						this->_type : rhs.getType();
-	double			rhs_value = std::stod(rhs.toString());
+	double			rhs_value;
 
-	str_value = std::to_string(this->_value - rhs_value);
+	try
+	{
+		rhs_value = std::stod(rhs.toString());
+	}
+	catch (std::exception & e)
+	{
+		std::cerr << "Error: overflow Double";
+		exit(0);
+	}
+	str_value = std::to_string(rhs_value - this->_value);
 	r_operand = creator.createOperand(type, str_value);
 	return (r_operand);
 }
@@ -73,8 +91,17 @@ IOperand const * Double::operator*( IOperand const & rhs ) const
 	std::string		str_value;
 	eOperandType	type = this->_type > rhs.getType() ?
 						this->_type : rhs.getType();
-	double			rhs_value = std::stod(rhs.toString());
+	double			rhs_value;
 
+	try
+	{
+		rhs_value = std::stod(rhs.toString());
+	}
+	catch (std::exception & e)
+	{
+		std::cerr << "Error: overflow Double";
+		exit(0);
+	}
 	str_value = std::to_string(this->_value * rhs_value);
 	r_operand = creator.createOperand(type, str_value);
 	return (r_operand);
@@ -87,9 +114,18 @@ IOperand const * Double::operator/( IOperand const & rhs ) const
 	std::string		str_value;
 	eOperandType	type = this->_type > rhs.getType() ?
 						this->_type : rhs.getType();
-	double			rhs_value = std::stod(rhs.toString());
+	double			rhs_value;
 
-	str_value = std::to_string(this->_value / rhs_value);
+	try
+	{
+		rhs_value = std::stod(rhs.toString());
+	}
+	catch (std::exception & e)
+	{
+		std::cerr << "Error: overflow Double";
+		exit(0);
+	}
+	str_value = std::to_string(rhs_value / this->_value);
 	r_operand = creator.createOperand(type, str_value);
 	return (r_operand);
 }
@@ -101,10 +137,19 @@ IOperand const * Double::operator%( IOperand const & rhs ) const
 	std::string		str_value;
 	eOperandType	type = this->_type > rhs.getType() ?
 						this->_type : rhs.getType();
-	double			rhs_value = std::stod(rhs.toString());
+	double			rhs_value;
 	double			result;
 
-	result = std::fmod(static_cast<double>(this->_value), rhs_value);
+	try
+	{
+		rhs_value = std::stod(rhs.toString());
+	}
+	catch (std::exception & e)
+	{
+		std::cerr << "Error: overflow Double";
+		exit(0);
+	}
+	result = std::fmod(rhs_value, static_cast<double>(this->_value));
 	str_value = std::to_string(result);
 	r_operand = creator.createOperand(type, str_value);
 	return (r_operand);

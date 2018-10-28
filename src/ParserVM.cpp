@@ -6,6 +6,8 @@ ParserVM::ParserVM(CommandVM *command_vm)
 	this->_command_vm = command_vm;
 	this->_nbr_line = 0;
 	this->_error = 0;
+	this->_countExit = 0;
+	this->_isInput = false;
 }
 
 ParserVM::~ParserVM()
@@ -62,19 +64,28 @@ void	ParserVM::iread()
 	std::string		line;
 	std::string		t_line;
 
+	this->_isInput = true;
 	while (std::getline(std::cin, line))
 	{
-		this->_nbr_line++;
-		t_line = this->_check_line(line);
-		if (t_line.empty())
+		try
 		{
-			line.clear();
-			continue;
+			this->_nbr_line++;
+			t_line = this->_check_line(line);
+			if (t_line.empty())
+			{
+				line.clear();
+				continue;
+			}
+			if (this->_hendl_line(t_line))
+			{
+				line.clear();
+				break ;
+			}
 		}
-		if (this->_hendl_line(t_line))
+		catch (std::exception & e)
 		{
-			line.clear();
-			break ;
+			std::cerr << e.what() << std::endl;
+			exit(0);
 		}
 		line.clear();
 	}
@@ -102,7 +113,7 @@ int		ParserVM::_hendl_line(std::string const line)
 	while (++i < 11)
 		if (command == arr_comm[i])
 			break ;
-	if (command == ";;")
+	if (command == ";;" && this->_isInput == true)
 		return (1);
 	if (arr_comm[i] == "")
 	{
@@ -123,17 +134,29 @@ void	ParserVM::_add_command(int comm, std::string str)
 
 	n_comm.comm = comm;
 	n_comm.value = "";
-	n_comm.type = 0;
+	n_comm.type = NIL;
+	if (comm != PUSH && comm != ASSERT && str != "")
+	{
+		this->_error++;
+		throw ParserVM::ParseException(this->_nbr_line, 0, PARS_ERROR_COMM);
+	}
 	if ((comm == PUSH || comm == ASSERT) && !str.empty())
 	{
 		vect = this->_split(str, '(');
-		vect[0] == "Int8" ? n_comm.type = INT8 : 0;
-		vect[0] == "Int16" ? n_comm.type = INT16 : 0;
-		vect[0] == "Int32" ? n_comm.type = INT32 : 0;
-		vect[0] == "Float" ? n_comm.type = FLOAT : 0;
-		vect[0] == "Double" ? n_comm.type = DOUBLE : 0;
+		vect[0] == "int8" ? n_comm.type = INT8 : 0;
+		vect[0] == "int16" ? n_comm.type = INT16 : 0;
+		vect[0] == "int32" ? n_comm.type = INT32 : 0;
+		vect[0] == "float" ? n_comm.type = FLOAT : 0;
+		vect[0] == "double" ? n_comm.type = DOUBLE : 0;
 		if (vect.size() > 1)
+		{
+			if (this->_count_c(vect[1], ')') != 1)
+			{
+				this->_error++;
+				throw ParserVM::ParseException(this->_nbr_line, 0, PARS_ERROR_ARG);
+			}
 			vect = this->_split(vect[1], ')');
+		}
 		n_comm.value = vect[0];
 		if (!n_comm.type || !this->_isdigit(vect[0], n_comm.type))
 		{
@@ -146,6 +169,10 @@ void	ParserVM::_add_command(int comm, std::string str)
 		this->_error++;
 		throw ParserVM::ParseException(this->_nbr_line, 0, PARS_ERROR_COMM);
 	}
+	if (comm == EXIT)
+	{
+		this->_countExit++;
+	}
 	this->_command_vm->command.push_back(n_comm);
 }
 
@@ -155,7 +182,8 @@ ParserVM::ParseException::ParseException() throw()
 {
 }
 
-ParserVM::ParseException::ParseException(int line, char *file, int type_error) throw() : line(line), file(file), type_error(type_error)
+ParserVM::ParseException::ParseException(int line, char *file, int type_error) throw() : 
+				line(line), file(file), type_error(type_error)
 {
 }
 
@@ -189,7 +217,8 @@ const char	*ParserVM::ParseException::what() const throw()
 	return (str.c_str());
 }
 
-ParserVM::ParseException	& ParserVM::ParseException::operator=(ParserVM::ParseException const & ref) throw()
+ParserVM::ParseException	& ParserVM::ParseException::operator=(
+					ParserVM::ParseException const & ref) throw()
 {
 	this->type_error = ref.type_error;
 	this->file = ref.file;
@@ -200,6 +229,18 @@ ParserVM::ParseException	& ParserVM::ParseException::operator=(ParserVM::ParseEx
 
 // Helpful obj -----------------------
 
+int							ParserVM::_count_c(std::string const &str, char c)
+{
+	size_t i = 0;
+	int count = 0;
+
+	while (i < str.size())
+	{
+		if (str[i++] == c)
+			count++;
+	}
+	return (count);
+}
 
 std::vector<std::string>	ParserVM::_split(const std::string& s,
 									char delim)
@@ -220,7 +261,7 @@ std::string					ParserVM::_check_line(std::string line)
 	std::string					str;
 
 	ss >> str;
-	if (str == ";;")
+	if (str == ";;" && this->_isInput == true)
 		return (str);
 	if (line.empty() || (line[0] == ';'))
 		return ("");
@@ -232,21 +273,24 @@ int							ParserVM::_isdigit(std::string str, int type)
 {
 	int		i;
 	int		count_dot;
+	int		count_digit_after_dot;
 
 	i = -1;
 	count_dot = 0;
+	count_digit_after_dot = 0;
 	while (str[++i])
 	{
 		if (str[i] == '-' && i != 0)
 			return (0);
-		// if (i > 18)
-		// 	return (0);
 		if ((str[i] < '0' || str[i] > '9') && str[i] != '.' && str[i] != '-')
 			return (0);
+		count_dot > 0 ? count_digit_after_dot++ : 0;
 		if ((str[i] == '.'
 				&& type != FLOAT && type != DOUBLE)
-				|| (str[i] == '.' && (count_dot++ || !i)))
+				|| (str[i] == '.' && (count_dot++ || !i || (i == 1 && str[0] == '-'))))
 			return (0);
 	}
+	if (i == 0 || (count_digit_after_dot == 0 && count_dot))
+		return (0);
 	return (1);
 }

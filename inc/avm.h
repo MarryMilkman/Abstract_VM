@@ -9,6 +9,7 @@
 # include <algorithm>
 # include <stdlib.h> 
 # include <cmath>
+# include <stack>
 
 // Error messeges
 
@@ -17,6 +18,8 @@
 # define OPEN_ERROR -3
 # define PARS_ERROR_ARG -4
 # define PARS_ERROR_COMM -5
+# define PARS_ERROR_NO_EXIT -6
+# define ERROR_NO_EXIT -7
 
 // command
 # define PUSH 0
@@ -31,15 +34,17 @@
 # define PRINT 9
 # define EXIT 10
 
-// enum
-# define INT8 1
-# define INT16 2
-# define INT32 3
-# define FLOAT 4
-# define DOUBLE 5
+enum eOperandType
+{
+	NIL = 0,
+	INT8,
+	INT16,
+	INT32,
+	FLOAT,
+	DOUBLE
+};
 
-
-typedef int eOperandType;
+typedef eOperandType eOperandType;
 
 typedef struct 			s_command
 {

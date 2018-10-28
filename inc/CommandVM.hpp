@@ -22,12 +22,13 @@ public:
 	CommandVM(CommandVM const & ref);
 	~CommandVM();
 
-	void					start();
-	std::vector<t_command>	command;
+	void							start();
+	std::vector<t_command>			command;
 
-	t_stack					*get_stack() const;
+	// t_stack					*get_stack() const;
+	std::stack<IOperand const *>	get_operandStack() const;
 
-	CommandVM				& operator=(CommandVM const & ref);
+	CommandVM						& operator=(CommandVM const & ref);
 
 	class	CommandException : public std::exception
 	{
@@ -45,10 +46,12 @@ public:
 	};
 
 private:
-	t_stack	*_stack;
-	void	_add_to_stack(IOperand const *operand);
-	void	_remove_from_stack();
-	void	_free_stack();
+	// t_stack					*_stack;
+	std::stack<IOperand const *>	_operandStack;
+
+	// void	_add_to_stack(IOperand const *operand);
+	// void	_remove_from_stack();
+	// void	_free_stack();
 
 	void	_push(t_command & command);
 	void	_pop(t_command & command);

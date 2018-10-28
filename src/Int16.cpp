@@ -61,7 +61,7 @@ IOperand const * Int16::operator-( IOperand const & rhs ) const
 						this->_type : rhs.getType();
 	double			rhs_value = std::stod(rhs.toString());
 
-	str_value = std::to_string(this->_value - rhs_value);
+	str_value = std::to_string(rhs_value - this->_value);
 	r_operand = creator.createOperand(type, str_value);
 	return (r_operand);
 }
@@ -89,7 +89,7 @@ IOperand const * Int16::operator/( IOperand const & rhs ) const
 						this->_type : rhs.getType();
 	double			rhs_value = std::stod(rhs.toString());
 
-	str_value = std::to_string(this->_value / rhs_value);
+	str_value = std::to_string(rhs_value / this->_value);
 	r_operand = creator.createOperand(type, str_value);
 	return (r_operand);
 }
@@ -104,7 +104,7 @@ IOperand const * Int16::operator%( IOperand const & rhs ) const
 	double			rhs_value = std::stod(rhs.toString());
 	double			result;
 
-	result = std::fmod(static_cast<double>(this->_value), rhs_value);
+	result = std::fmod(rhs_value, static_cast<double>(this->_value));
 	str_value = std::to_string(result);
 	r_operand = creator.createOperand(type, str_value);
 	return (r_operand);

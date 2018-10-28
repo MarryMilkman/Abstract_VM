@@ -1,13 +1,9 @@
-push Float(-0.123)
-push Int8(123)
-print
+push int8(65)
+dump
+push double(4.5)
 mul
 dump
-push Float(0.2)
-push Float(131123123123)
-mod
-dump
+pop
+print
+exit
 ;;
-asdasdasdas
-div
-dump
